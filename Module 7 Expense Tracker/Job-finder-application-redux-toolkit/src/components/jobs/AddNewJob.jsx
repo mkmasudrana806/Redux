@@ -1,4 +1,48 @@
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
+import {
+  addJob,
+  clearSingleJob,
+  editJob,
+  getSingleJob,
+} from "../../redux/features/jobs/jobsSlice";
+
 const AddNewJob = () => {
+  const { id } = useParams();
+  const dispatch = useDispatch();
+  const { singleJob, isLoading, isError } = useSelector((state) => state.jobs);
+
+  const [newJob, setNewJob] = useState({
+    title: "",
+    type: "",
+    salary: "",
+    deadline: "",
+  });
+
+  useEffect(() => {
+    if (id) {
+      dispatch(getSingleJob(id));
+    }
+  }, [dispatch, id]);
+
+  useEffect(() => {
+    if (id) {
+      setNewJob((prev) => ({ ...prev, ...singleJob }));
+    }
+  }, [id, singleJob]);
+
+  // handle add job
+  const handleAddAndUpdateJob = (e) => {
+    e.preventDefault();
+    if (id) {
+      dispatch(editJob({ id, data: newJob }));
+      dispatch(clearSingleJob(id));
+    } else {
+      dispatch(addJob(newJob));
+    }
+  };
+
   return (
     <div className="max-w-[90rem] mx-auto px-4 sm:px-6 md:px-8">
       <div className="lg:pl-[14rem] mt-[5.8125rem]">
@@ -6,7 +50,7 @@ const AddNewJob = () => {
           <h1 className="mb-10 text-center lws-section-title">Add New Job</h1>
 
           <div className="max-w-3xl mx-auto">
-            <form className="space-y-6">
+            <form onSubmit={handleAddAndUpdateJob} className="space-y-6">
               <div className="fieldContainer">
                 <label
                   htmlFor="lws-JobTitle"
@@ -14,10 +58,16 @@ const AddNewJob = () => {
                 >
                   Job Title
                 </label>
-                <select id="lws-JobTitle" name="lwsJobTitle" required>
-                  <option value="" hidden selected>
-                    Select Job
-                  </option>
+                <select
+                  id="lws-JobTitle"
+                  value={newJob.title}
+                  onChange={(e) =>
+                    setNewJob({ ...newJob, title: e.target.value })
+                  }
+                  name="lwsJobTitle"
+                  required
+                >
+                  <option hidden>Select Job</option>
                   <option>Software Engineer</option>
                   <option>Software Developer</option>
                   <option>Full Stack Developer</option>
@@ -37,8 +87,16 @@ const AddNewJob = () => {
 
               <div className="fieldContainer">
                 <label htmlFor="lws-JobType">Job Type</label>
-                <select id="lws-JobType" name="lwsJobType" required>
-                  <option value="" hidden selected>
+                <select
+                  value={newJob.type}
+                  onChange={(e) =>
+                    setNewJob({ ...newJob, type: e.target.value })
+                  }
+                  id="lws-JobType"
+                  name="lwsJobType"
+                  required
+                >
+                  <option hidden selected>
                     Select Job Type
                   </option>
                   <option>Full Time</option>
@@ -52,6 +110,10 @@ const AddNewJob = () => {
                 <div className="flex border rounded-md shadow-sm border-slate-600">
                   <span className="input-tag">BDT</span>
                   <input
+                    value={newJob.salary}
+                    onChange={(e) =>
+                      setNewJob({ ...newJob, salary: e.target.value })
+                    }
                     type="number"
                     name="lwsJobSalary"
                     id="lws-JobSalary"
@@ -65,6 +127,10 @@ const AddNewJob = () => {
               <div className="fieldContainer">
                 <label htmlFor="lws-JobDeadline">Deadline</label>
                 <input
+                  value={newJob.deadline}
+                  onChange={(e) =>
+                    setNewJob({ ...newJob, deadline: e.target.value })
+                  }
                   type="date"
                   name="lwsJobDeadline"
                   id="lws-JobDeadline"
@@ -78,7 +144,7 @@ const AddNewJob = () => {
                   id="lws-submit"
                   className="cursor-pointer btn btn-primary w-fit"
                 >
-                  Submit
+                  {id ? "update" : "submit"}
                 </button>
               </div>
             </form>
