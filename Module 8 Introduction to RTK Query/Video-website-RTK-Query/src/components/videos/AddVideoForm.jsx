@@ -33,9 +33,7 @@ const AddVideoForm = () => {
     setNewVideo((prev) => ({ ...prev, ...video }));
   }, [video]);
 
-  useEffect(() => {
-    console.log("effect called");
-  }, []);
+
   // handle Add new video
   const addNewVideoOrUpdate = (e) => {
     e.preventDefault();

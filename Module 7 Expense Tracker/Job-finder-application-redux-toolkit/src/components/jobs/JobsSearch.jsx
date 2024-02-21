@@ -5,7 +5,6 @@ import { searchJob, sortJob } from "../../redux/features/jobs/jobsSlice";
 const JobsSearch = () => {
   const dispatch = useDispatch();
   const [search, setSearch] = useState("");
-  const [sort, setSort] = useState("");
 
   // handle search jobs
   const handleSearch = (e) => {
